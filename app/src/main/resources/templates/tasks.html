@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Tasks</title>
+</head>
+<body>
+
+<h2>All Tasks</h2>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Due Date</th>
+        <th>Status</th>
+        <th>Priority</th>
+        <th>Created At</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="task : ${tasks}">
+        <td th:text="${task.id}"></td>
+        <td th:text="${task.title}"></td>
+        <td th:text="${task.description}"></td>
+        <td th:text="${task.dueDate}"></td>
+        <td th:text="${task.status}"></td>
+        <td th:text="${task.priority}"></td>
+        <td th:text="${task.createdAt}"></td>
+
+        <td>
+            <!-- Correct Edit Link -->
+            <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}">
+                Edit
+            </a>
+
+            |
+
+            <!-- Correct Delete Link -->
+            <a th:href="@{/api/tasks/delete/{id}(id=${task.id})}"
+               onclick="return confirm('Are you sure want to delete this task?');">
+                Delete
+            </a>
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+<br/><br/>
+
+<a href="/api/tasks/add">Add New Task</a>
+
+</body>
+</html>
