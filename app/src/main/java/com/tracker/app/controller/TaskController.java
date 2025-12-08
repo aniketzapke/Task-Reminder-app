@@ -81,4 +81,14 @@ public class TaskController {
         taskservice.deleteTask(id);
         return "redirect:/api/tasks/task";
     }
+    @GetMapping("/done/{id}")
+    public String markTaskDone(@PathVariable Integer id){
+        Task task = taskservice.findById(id).orElse(null);
+        if(task != null){
+            task.setStatus("Done");
+            taskservice.updateTask(task);
+        }
+        return "redirect:/api/tasks/task";
+    }
+
 }

@@ -44,6 +44,11 @@
                onclick="return confirm('Are you sure want to delete this task?');">
                 Delete
             </a>
+            |
+            <a th:href="@{/api/tasks/done/{id}(id=${task.id})}">
+                Done
+            </a>
+
         </td>
     </tr>
     </tbody>
