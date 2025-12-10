@@ -49,10 +49,9 @@ public class TaskController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Integer id, Model model){
-        Task task = taskservice.findById(id).orElse(null);
-        if(task == null){
-            return "redirect:/api/tasks/task";
-        }
+        Task task = taskservice.findById(id).orElseThrow(() ->new RuntimeException("Task not found"));
+
+
         model.addAttribute("task", task);
         return "edit-task";
     }
@@ -77,7 +76,11 @@ public class TaskController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteTask(@PathVariable Integer id){
+    public String deleteTask(@PathVariable Integer id, Model model){
+        if(!taskservice.findById(id).isPresent()){
+            model.addAttribute("errorMessage","Task not found");
+            return "tasks";
+        }
         taskservice.deleteTask(id);
         return "redirect:/api/tasks/task";
     }

@@ -14,25 +14,36 @@ public class Taskservice {
     @Autowired
     private TaskRepository taskRepository;
 
-    public List<Task> getAllTasks(){
-
+    public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
-
-    public void addTask(Task task){
-        taskRepository.save(task);
+    public Task addTask(Task task) {
+        return taskRepository.save(task);
     }
-
-    public Optional<Task> findById(Integer id){
+    public Optional<Task> findById(Integer id) {
         return taskRepository.findById(id);
     }
-
-    public void updateTask(Task updated){
-        taskRepository.save(updated);
+    public Task updateTask(Task updated) {
+        return taskRepository.save(updated);
     }
 
-    public void deleteTask(Integer id){
+    public void deleteTask(Integer id) {
         taskRepository.deleteById(id);
     }
-}
 
+    public List<Task> findByStatus(String status){
+        return taskRepository.findByStatus(status);
+    }
+
+    public List<Task> findByPriority(String priority){
+        return taskRepository.findByPriority(priority);
+    }
+
+    public List<Task> searchByTitle(String keyword){
+        return taskRepository.searchByTitle(keyword);
+    }
+
+    public List<Task> findByDueDate(String date){
+        return taskRepository.findByDueDate(date);
+    }
+}
