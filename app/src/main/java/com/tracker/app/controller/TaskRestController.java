@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +18,14 @@ public class TaskRestController {
 
     @Autowired
     private Taskservice taskService;
-
-    @GetMapping()
-    public ResponseEntity<List<Task>> getAll() {
-        return ResponseEntity.ok(taskService.getAllTasks());
+    @Autowired
+    public TaskRestController(Taskservice taskService){
+        this.taskService=taskService;
+    }
+    @GetMapping
+    public ResponseEntity<Page<Task>> getAll(Pageable pageable) {
+        Page<Task> page = taskService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{id}")

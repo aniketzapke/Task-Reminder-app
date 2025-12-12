@@ -1,5 +1,6 @@
 package com.tracker.app.service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.tracker.app.entity.Task;
 import com.tracker.app.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ public class Taskservice {
 
     @Autowired
     private TaskRepository taskRepository;
+    public Page<Task> findAll(Pageable pageable) {
+        return taskRepository.findAll(pageable);
+    }
 
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
@@ -46,4 +50,10 @@ public class Taskservice {
     public List<Task> findByDueDate(String date){
         return taskRepository.findByDueDate(date);
     }
+    public List<Task> sortByField(String field) {
+
+        return taskRepository.findAll();
+    }
+
+
 }

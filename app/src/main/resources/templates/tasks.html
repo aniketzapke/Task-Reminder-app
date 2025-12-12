@@ -2,10 +2,94 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>All Tasks</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 18px; }
+        h2 { margin-bottom: 8px; }
+
+        .top-nav { margin-bottom: 12px; }
+
+        .filters { margin-bottom: 14px; }
+
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f4f4f4; } /* table header color */
+
+        .overdue { background-color: #fff8f0; }
+
+        .badge { padding: 4px 9px; border-radius: 4px; font-weight: 600; }
+        .badge-high { color: #b22222; }
+        .badge-medium { color: #e67e22; }
+        .badge-low { color: #2e8b57; }
+        .status-done { color: #2e8b57; font-weight: 600; }
+        .status-pending { color: #ff7f7f; font-weight: 600; }
+
+        .actions a { margin-right: 6px; }
+
+        .filter-input {
+            margin-right: 8px;
+            padding: 4px 6px;
+        }
+
+        .btn {
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #1f78b4;
+            color: white;
+            border-color: #1f78b4;
+        }
+
+        .small { font-size: 0.9em; }
+    </style>
+
+
 </head>
 <body>
 
 <h2>All Tasks</h2>
+
+<form class="filters" action="/api/tasks/task" method="get" th:action="@{/api/tasks/task}">
+
+
+    <label>Status:</label>
+    <select name="status" class="filter-input">
+        <option value="" th:selected="${param.status == null or param.status == ''}">All</option>
+        <option value="Pending" th:selected="${param.status == 'Pending'}">Pending</option>
+        <option value="Done" th:selected="${param.status == 'Done'}">Done</option>
+    </select>
+
+
+    <label>Priority:</label>
+    <select name="priority" class="filter-input">
+        <option value="" th:selected="${param.priority == null or param.priority == ''}">All</option>
+        <option value="High" th:selected="${param.priority == 'High'}">High</option>
+        <option value="Medium" th:selected="${param.priority == 'Medium'}">Medium</option>
+        <option value="Low" th:selected="${param.priority == 'Low'}">Low</option>
+    </select>
+
+
+    <label>Search Title:</label>
+    <input type="text" name="keyword" placeholder="keyword" class="filter-input small"
+           th:value="${param.keyword}"/>
+
+    <input type="hidden" name="sort" th:value="${param.sort}" />
+    <button type="submit" class="btn btn-primary small">Filter</button>
+    <a th:href="@{/api/tasks/task}" class="clear-link small">Clear Filters</a>
+
+    <span class="sort-links small" style="margin-left:12px;">
+        Sort:
+        <a th:href="@{/api/tasks/task(sort='dueDate')}">Due Date</a> |
+        <a th:href="@{/api/tasks/task(sort='priority')}">Priority</a> |
+        <a th:href="@{/api/tasks/task(sort='title')}">Title</a>
+    </span>
+</form>
+
 
 <table border="1" cellpadding="8" cellspacing="0">
     <thead>
@@ -23,37 +107,40 @@
 
     <tbody>
     <tr th:each="task : ${tasks}">
+
         <td th:text="${task.id}"></td>
         <td th:text="${task.title}"></td>
         <td th:text="${task.description}"></td>
         <td th:text="${task.dueDate}"></td>
-        <td th:text="${task.status}"></td>
-        <td th:text="${task.priority}"></td>
+
+        <!-- COLORED STATUS -->
+        <td>
+            <span th:class="'status-' + ${task.status.toLowerCase()}"
+                  th:text="${task.status}">
+            </span>
+        </td>
+
+        <!-- COLORED PRIORITY -->
+        <td>
+            <span th:class="'badge badge-' + ${task.priority.toLowerCase()}"
+                  th:text="${task.priority}">
+            </span>
+        </td>
+
         <td th:text="${task.createdAt}"></td>
 
         <td>
-            <!-- Correct Edit Link -->
-            <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}">
-                Edit
-            </a>
-
-            |
-
-            <!-- Correct Delete Link -->
+            <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}">Edit</a> |
             <a th:href="@{/api/tasks/delete/{id}(id=${task.id})}"
                onclick="return confirm('Are you sure want to delete this task?');">
                 Delete
-            </a>
-            |
-            <a th:href="@{/api/tasks/done/{id}(id=${task.id})}">
-                Done
-            </a>
-
+            </a> |
+            <a th:href="@{/api/tasks/done/{id}(id=${task.id})}">Done</a>
         </td>
     </tr>
     </tbody>
-
 </table>
+
 
 <br/><br/>
 

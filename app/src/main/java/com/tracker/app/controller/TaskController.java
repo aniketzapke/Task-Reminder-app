@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/tasks")
@@ -14,10 +15,29 @@ public class TaskController {
 
     @Autowired
     private Taskservice taskservice;
-
     @GetMapping("/task")
-    public String listTasks(Model model){
-        model.addAttribute("tasks", taskservice.getAllTasks());
+    public String listTasks(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String sort,
+            Model model) {
+
+        List<Task> tasks;
+
+        if (status != null && !status.isEmpty()) {
+            tasks = taskservice.findByStatus(status);
+        } else if (priority != null && !priority.isEmpty()) {
+            tasks = taskservice.findByPriority(priority);
+        } else if (keyword != null && !keyword.isEmpty()) {
+            tasks = taskservice.searchByTitle(keyword);
+        } else if (sort != null && !sort.isEmpty()) {
+            tasks = taskservice.sortByField(sort);
+        } else {
+            tasks = taskservice.getAllTasks();
+        }
+
+        model.addAttribute("tasks", tasks);
         return "tasks";
     }
 
