@@ -24,22 +24,27 @@ public class TaskController {
             Model model) {
 
         List<Task> tasks;
-
-        if (status != null && !status.isEmpty()) {
-            tasks = taskservice.findByStatus(status);
-        } else if (priority != null && !priority.isEmpty()) {
-            tasks = taskservice.findByPriority(priority);
-        } else if (keyword != null && !keyword.isEmpty()) {
+        if (keyword != null && !keyword.trim().isEmpty()) {
             tasks = taskservice.searchByTitle(keyword);
-        } else if (sort != null && !sort.isEmpty()) {
+        }
+        else if (status != null && !status.trim().isEmpty()) {
+            tasks = taskservice.findByStatus(status);
+        }
+        else if (priority != null && !priority.trim().isEmpty()) {
+            tasks = taskservice.findByPriority(priority);
+        }
+        else if (sort != null && !sort.trim().isEmpty()) {
             tasks = taskservice.sortByField(sort);
-        } else {
+        }
+        else {
             tasks = taskservice.getAllTasks();
         }
-
         model.addAttribute("tasks", tasks);
         return "tasks";
     }
+
+
+
 
     @GetMapping("/add")
     public String showAddForm(Model model){
