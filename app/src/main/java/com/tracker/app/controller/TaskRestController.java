@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.tracker.app.enums.TaskStatus;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -69,8 +71,11 @@ public class TaskRestController {
 
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Task>> getByStatus(@PathVariable String status) {
-        return ResponseEntity.ok(taskService.findByStatus(status));
+        return ResponseEntity.ok(
+                taskService.findByStatus(TaskStatus.valueOf(status.toUpperCase()))
+        );
     }
+
 
     @GetMapping("/priority/{priority}")
     public ResponseEntity<List<Task>> getByPriority(@PathVariable String priority) {

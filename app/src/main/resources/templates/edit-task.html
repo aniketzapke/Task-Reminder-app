@@ -23,16 +23,20 @@
 
     <label>Status:</label>
     <select th:field="*{status}">
-        <option value="Pending">Pending</option>
-        <option value="Done">Done</option>
+        <option th:each="s : ${T(com.tracker.app.enums.TaskStatus).values()}"
+                th:value="${s}"
+                th:text="${s}">
+        </option>
     </select><br/><br/>
 
     <label>Priority:</label>
     <select th:field="*{priority}">
-        <option value="Low">Low</option>
-        <option value="Medium">Medium</option>
-        <option value="High">High</option>
-    </select><br/><br/>
+        <option th:each="p : ${T(com.tracker.app.enums.TaskPriority).values()}"
+                th:value="${p}"
+                th:text="${p}">
+        </option>
+    </select>
+    <br/><br/>
 
     <button type="submit">Update Task</button>
     <a th:href="@{/api/tasks/task}">Cancel</a>

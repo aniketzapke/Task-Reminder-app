@@ -115,16 +115,16 @@
 
         <!-- COLORED STATUS -->
         <td>
-            <span th:class="'status-' + ${task.status.toLowerCase()}"
+            <span th:class="'status-' + ${#strings.toLowerCase(task.status.name())}"
                   th:text="${task.status}">
-            </span>
+    </span>
         </td>
 
         <!-- COLORED PRIORITY -->
         <td>
-            <span th:class="'badge badge-' + ${task.priority.toLowerCase()}"
+            <span th:class="'badge badge-' + ${#strings.toLowerCase(task.priority.name())}"
                   th:text="${task.priority}">
-            </span>
+    </span>
         </td>
 
         <td th:text="${task.createdAt}"></td>
