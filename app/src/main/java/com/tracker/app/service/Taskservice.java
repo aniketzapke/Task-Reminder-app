@@ -42,7 +42,6 @@ public class Taskservice {
         taskRepository.deleteById(id);
     }
 
-    // ✅ FIXED: String → TaskStatus
     public List<Task> findByStatus(TaskStatus status) {
         return taskRepository.findByStatus(status);
     }

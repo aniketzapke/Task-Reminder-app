@@ -101,6 +101,7 @@
         <th>Status</th>
         <th>Priority</th>
         <th>Created At</th>
+        <th>Completed At</th>
         <th>Actions</th>
     </tr>
     </thead>
@@ -113,29 +114,43 @@
         <td th:text="${task.description}"></td>
         <td th:text="${task.dueDate}"></td>
 
-        <!-- COLORED STATUS -->
         <td>
             <span th:class="'status-' + ${#strings.toLowerCase(task.status.name())}"
                   th:text="${task.status}">
     </span>
         </td>
-
-        <!-- COLORED PRIORITY -->
         <td>
             <span th:class="'badge badge-' + ${#strings.toLowerCase(task.priority.name())}"
                   th:text="${task.priority}">
     </span>
         </td>
 
-        <td th:text="${task.createdAt}"></td>
+        <td th:text="${#temporals.format(task.createdAt, 'dd-MM-yyyy')}"></td>
 
         <td>
+    <span th:text="${task.completedAt != null
+        ? #temporals.format(task.completedAt, 'dd-MM-yyyy')
+        : '-'}">
+    </span>
+        </td>
+
+
+
+        <td>
+        <td>
+            <a th:href="@{/api/tasks/view/{id}(id=${task.id})}">View</a> |
             <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}">Edit</a> |
             <a th:href="@{/api/tasks/delete/{id}(id=${task.id})}"
                onclick="return confirm('Are you sure want to delete this task?');">
                 Delete
-            </a> |
-            <a th:href="@{/api/tasks/done/{id}(id=${task.id})}">Done</a>
+            </a>
+        </td>
+
+        <a th:if="${task.status.name() == 'IN_PROGRESS'}"
+               th:href="@{/api/tasks/done/{id}(id=${task.id})}">
+                Mark Done
+            </a>
+
         </td>
     </tr>
     </tbody>
