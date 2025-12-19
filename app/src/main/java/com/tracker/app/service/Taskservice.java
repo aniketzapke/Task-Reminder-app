@@ -18,7 +18,7 @@ public class Taskservice {
     @Autowired
     private TaskRepository taskRepository;
 
-    // ✅ Pagination (mentor requirement)
+
     public Page<Task> findAll(Pageable pageable) {
         return taskRepository.findAll(pageable);
     }
@@ -63,7 +63,7 @@ public class Taskservice {
         return taskRepository.findAll(); // simple fallback
     }
 
-    // ✅ PAGINATION + FILTER LOGIC (mentor asked)
+
     public Page<Task> getPagedTasks(
             Pageable pageable,
             TaskStatus status,

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.data.domain.Pageable;
-//import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -35,7 +34,7 @@ public class TaskController {
 
             Model model) {
 
-       // List<Task> tasks= null;
+
 
         Pageable pageable= PageRequest.of(page,size);
         Page<Task> taskPage=taskservice.getPagedTasks(pageable, status, priority, keyword);
