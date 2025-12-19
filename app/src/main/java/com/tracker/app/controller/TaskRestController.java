@@ -1,5 +1,6 @@
 package com.tracker.app.controller;
 import com.tracker.app.entity.Task;
+import com.tracker.app.enums.TaskPriority;
 import com.tracker.app.service.Taskservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,8 +80,11 @@ public class TaskRestController {
 
     @GetMapping("/priority/{priority}")
     public ResponseEntity<List<Task>> getByPriority(@PathVariable String priority) {
-        return ResponseEntity.ok(taskService.findByPriority(priority));
+        return ResponseEntity.ok(
+                taskService.findByPriority(TaskPriority.valueOf(priority.toUpperCase()))
+        );
     }
+
 
     @GetMapping("/search")
     public ResponseEntity<List<Task>> searchByTitle(@RequestParam("keyword") String keyword) {

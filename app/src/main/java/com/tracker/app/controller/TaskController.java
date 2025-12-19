@@ -1,18 +1,22 @@
 package com.tracker.app.controller;
 
 import com.tracker.app.entity.Task;
+import com.tracker.app.enums.TaskPriority;
 import com.tracker.app.enums.TaskStatus;
 import com.tracker.app.service.Taskservice;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import org.springframework.data.domain.Pageable;
+//import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.IntStream;
 
-//import static jdk.vm.ci.hotspot.riscv64.RISCV64HotSpotRegisterConfig.ra;
 
 @Controller
 @RequestMapping("/api/tasks")
@@ -23,32 +27,28 @@ public class TaskController {
 
     @GetMapping("/task")
     public String listTasks(
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String priority,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) TaskStatus status,
+            @RequestParam(required = false) TaskPriority priority,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String sort,
+
             Model model) {
 
-        List<Task> tasks;
+       // List<Task> tasks= null;
 
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            tasks = taskservice.searchByTitle(keyword);
-        }
-        else if (status != null && !status.trim().isEmpty()) {
-            tasks = taskservice.findByStatus(TaskStatus.valueOf(status.toUpperCase()));
-        }
-        else if (priority != null && !priority.trim().isEmpty()) {
-            tasks = taskservice.findByPriority(priority);
-        }
-        else if (sort != null && !sort.trim().isEmpty()) {
-            tasks = taskservice.sortByField(sort);
-        }
-        else {
-            tasks = taskservice.getAllTasks();
-        }
-
-        model.addAttribute("tasks", tasks);
+        Pageable pageable= PageRequest.of(page,size);
+        Page<Task> taskPage=taskservice.getPagedTasks(pageable, status, priority, keyword);
+        model.addAttribute("taskpage",taskPage);
+        model.addAttribute("tasks", taskPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", taskPage.getTotalPages());
+        model.addAttribute("size", size);
+        int TotalPage=taskPage.getTotalPages();
+        List<Integer> pageNumbers = IntStream.range(0, TotalPage).boxed().toList();
+        model.addAttribute("pageNumbers", pageNumbers);
         return "tasks";
+
     }
 
     @GetMapping("/add")

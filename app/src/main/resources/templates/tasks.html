@@ -133,28 +133,37 @@
         : '-'}">
     </span>
         </td>
-
-
-
-        <td>
         <td>
             <a th:href="@{/api/tasks/view/{id}(id=${task.id})}">View</a> |
             <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}">Edit</a> |
             <a th:href="@{/api/tasks/delete/{id}(id=${task.id})}"
                onclick="return confirm('Are you sure want to delete this task?');">
                 Delete
-            </a>
-        </td>
-
+            </a> |
         <a th:if="${task.status.name() == 'IN_PROGRESS'}"
-               th:href="@{/api/tasks/done/{id}(id=${task.id})}">
-                Mark Done
-            </a>
-
+           th:href="@{/api/tasks/done/{id}(id=${task.id})}">
+            Mark Done
+        </a>
         </td>
     </tr>
     </tbody>
 </table>
+
+
+<div class="pagination" th:if="${totalPages > 1}" style="margin-top: 15px;">
+
+    <a th:if="${currentPage > 0}"
+       th:href="@{|/api/tasks/task?page=${currentPage - 1}&size=${size}|}"
+       class="btn">Previous</a>
+
+    <span th:text="'Page ' + ${currentPage + 1} + ' of ' + ${totalPages}"></span>
+
+    <a th:if="${currentPage < totalPages - 1}"
+       th:href="@{|/api/tasks/task?page=${currentPage + 1}&size=${size}|}"
+       class="btn">
+        Next
+    </a>
+</div>
 
 
 <br/><br/>

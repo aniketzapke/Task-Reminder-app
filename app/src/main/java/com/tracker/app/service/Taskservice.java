@@ -1,6 +1,7 @@
 package com.tracker.app.service;
 
 import com.tracker.app.entity.Task;
+import com.tracker.app.enums.TaskPriority;
 import com.tracker.app.enums.TaskStatus;
 import com.tracker.app.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class Taskservice {
         return taskRepository.findByStatus(status);
     }
 
-    public List<Task> findByPriority(String priority) {
+    public List<Task> findByPriority(TaskPriority priority) {
         return taskRepository.findByPriority(priority);
     }
 
@@ -58,8 +59,29 @@ public class Taskservice {
         return taskRepository.findByDueDate(date);
     }
 
-    // (optional sorting – no logic change)
     public List<Task> sortByField(String field) {
-        return taskRepository.findAll();
+        return taskRepository.findAll(); // simple fallback
+    }
+
+    // ✅ PAGINATION + FILTER LOGIC (mentor asked)
+    public Page<Task> getPagedTasks(
+            Pageable pageable,
+            TaskStatus status,
+            TaskPriority priority,
+            String keyword) {
+
+        if (status != null) {
+            return taskRepository.findByStatus(status, pageable);
+        }
+
+        if (priority != null) {
+            return taskRepository.findByPriority(priority, pageable);
+        }
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            return taskRepository.searchByTitle(keyword, pageable);
+        }
+
+        return taskRepository.findAll(pageable);
     }
 }
