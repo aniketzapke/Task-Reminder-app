@@ -2,173 +2,196 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>All Tasks</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 18px; }
-        h2 { margin-bottom: 8px; }
-
-        .top-nav { margin-bottom: 12px; }
-
-        .filters { margin-bottom: 14px; }
-
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background: #f4f4f4; } /* table header color */
-
-        .overdue { background-color: #fff8f0; }
-
-        .badge { padding: 4px 9px; border-radius: 4px; font-weight: 600; }
-        .badge-high { color: #b22222; }
-        .badge-medium { color: #e67e22; }
-        .badge-low { color: #2e8b57; }
-        .status-done { color: #2e8b57; font-weight: 600; }
-        .status-pending { color: #ff7f7f; font-weight: 600; }
-
-        .actions a { margin-right: 6px; }
-
-        .filter-input {
-            margin-right: 8px;
-            padding: 4px 6px;
-        }
-
-        .btn {
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            background: #f0f0f0;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #1f78b4;
-            color: white;
-            border-color: #1f78b4;
-        }
-
-        .small { font-size: 0.9em; }
-    </style>
 
 
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css"
+          rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 </head>
+
 <body>
 
-<h2>All Tasks</h2>
+<div class="page-wrapper">
+    <div class="filter-bar">
 
-<form class="filters" action="/api/tasks/task" method="get" th:action="@{/api/tasks/task}">
-
-
-    <label>Status:</label>
-    <select name="status" class="filter-input">
-        <option value="" th:selected="${param.status == null or param.status == ''}">All</option>
-        <option value="Pending" th:selected="${param.status == 'Pending'}">Pending</option>
-        <option value="Done" th:selected="${param.status == 'Done'}">Done</option>
-    </select>
-
-
-    <label>Priority:</label>
-    <select name="priority" class="filter-input">
-        <option value="" th:selected="${param.priority == null or param.priority == ''}">All</option>
-        <option value="High" th:selected="${param.priority == 'High'}">High</option>
-        <option value="Medium" th:selected="${param.priority == 'Medium'}">Medium</option>
-        <option value="Low" th:selected="${param.priority == 'Low'}">Low</option>
-    </select>
-
-
-    <label>Search Title:</label>
-    <input type="text" name="keyword" placeholder="keyword" class="filter-input small"
-           th:value="${param.keyword}"/>
-
-    <input type="hidden" name="sort" th:value="${param.sort}" />
-    <button type="submit" class="btn btn-primary small">Filter</button>
-    <a th:href="@{/api/tasks/task}" class="clear-link small">Clear Filters</a>
-
-    <span class="sort-links small" style="margin-left:12px;">
-        Sort:
-        <a th:href="@{/api/tasks/task(sort='dueDate')}">Due Date</a> |
-        <a th:href="@{/api/tasks/task(sort='priority')}">Priority</a> |
-        <a th:href="@{/api/tasks/task(sort='title')}">Title</a>
-    </span>
-</form>
-
-
-<table border="1" cellpadding="8" cellspacing="0">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Description</th>
-        <th>Due Date</th>
-        <th>Status</th>
-        <th>Priority</th>
-        <th>Created At</th>
-        <th>Completed At</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr th:each="task : ${tasks}">
-
-        <td th:text="${task.id}"></td>
-        <td th:text="${task.title}"></td>
-        <td th:text="${task.description}"></td>
-        <td th:text="${task.dueDate}"></td>
-
-        <td>
-            <span th:class="'status-' + ${#strings.toLowerCase(task.status.name())}"
-                  th:text="${task.status}">
-    </span>
-        </td>
-        <td>
-            <span th:class="'badge badge-' + ${#strings.toLowerCase(task.priority.name())}"
-                  th:text="${task.priority}">
-    </span>
-        </td>
-
-        <td th:text="${#temporals.format(task.createdAt, 'dd-MM-yyyy')}"></td>
-
-        <td>
-    <span th:text="${task.completedAt != null
-        ? #temporals.format(task.completedAt, 'dd-MM-yyyy')
-        : '-'}">
-    </span>
-        </td>
-        <td>
-            <a th:href="@{/api/tasks/view/{id}(id=${task.id})}">View</a> |
-            <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}">Edit</a> |
-            <a th:href="@{/api/tasks/delete/{id}(id=${task.id})}"
-               onclick="return confirm('Are you sure want to delete this task?');">
-                Delete
-            </a> |
-        <a th:if="${task.status.name() == 'IN_PROGRESS'}"
-           th:href="@{/api/tasks/done/{id}(id=${task.id})}">
-            Mark Done
+        <a class="btn btn-add" th:href="@{/api/tasks/add}">
+            + Add Task
         </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
 
+        <button class="btn btn-secondary" onclick="openCalendar()">
+            📅 Calendar View
+        </button>
 
-<div class="pagination" th:if="${totalPages > 1}" style="margin-top: 15px;">
+        <form class="filter-form" th:action="@{/api/tasks/task}" method="get">
 
-    <a th:if="${currentPage > 0}"
-       th:href="@{|/api/tasks/task?page=${currentPage - 1}&size=${size}|}"
-       class="btn">Previous</a>
+            <select name="status">
+                <option value="">All Status</option>
+                <option value="PENDING">Pending</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="DONE">Done</option>
+            </select>
 
-    <span th:text="'Page ' + ${currentPage + 1} + ' of ' + ${totalPages}"></span>
+            <select name="priority">
+                <option value="">All Priority</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+            </select>
 
-    <a th:if="${currentPage < totalPages - 1}"
-       th:href="@{|/api/tasks/task?page=${currentPage + 1}&size=${size}|}"
-       class="btn">
-        Next
-    </a>
+            <input type="text" name="keyword"
+                   placeholder="🔍 Search by title..."
+                   th:value="${param.keyword}" />
+
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a th:href="@{/api/tasks/task}" class="btn btn-secondary">Clear</a>
+        </form>
+
+        <div class="sort-box">
+            <span>Sort by:</span>
+            <a th:href="@{/api/tasks/task(sort='dueDate')}">📅 Due Date</a>
+            <a th:href="@{/api/tasks/task(sort='priority')}">⚡ Priority</a>
+            <a th:href="@{/api/tasks/task(sort='title')}">🔤 Title</a>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Created At</th>
+            <th>Completed At</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="task : ${tasks}">
+            <td th:text="${task.id}"></td>
+            <td th:text="${task.title}"></td>
+            <td th:text="${task.description}"></td>
+            <td th:text="${task.dueDate}"></td>
+
+            <td>
+                <span th:text="${task.status}"
+                      th:class="'status-' + ${#strings.toLowerCase(task.status.name())}">
+                </span>
+            </td>
+
+            <td>
+                <span th:text="${task.priority}"
+                      th:class="'badge badge-' + ${#strings.toLowerCase(task.priority.name())}">
+                </span>
+            </td>
+
+            <td th:text="${#temporals.format(task.createdAt, 'dd-MM-yyyy')}"></td>
+
+            <td>
+                <span th:text="${task.completedAt != null
+                        ? #temporals.format(task.completedAt, 'dd-MM-yyyy')
+                        : '-'}">
+                </span>
+            </td>
+
+            <td class="actions">
+                <a class="btn btn-secondary"
+                   th:href="@{/api/tasks/view/{id}(id=${task.id})}">View</a>
+
+                <a class="btn btn-primary"
+                   th:href="@{/api/tasks/edit/{id}(id=${task.id})}">Edit</a>
+
+                <a class="btn btn-danger"
+                   th:href="@{/api/tasks/delete/{id}(id=${task.id})}"
+                   onclick="return confirm('Are you sure?');">Delete</a>
+
+                <a th:if="${task.status.name() == 'IN_PROGRESS'}"
+                   class="btn btn-success"
+                   th:href="@{/api/tasks/done/{id}(id=${task.id})}">
+                    Mark Done
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
+<footer>
+    Task Reminder App © 2025 — Created by Student
+</footer>
 
-<br/><br/>
+<div id="calendarModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📅 Task Calendar</h3>
+            <span class="close" onclick="closeCalendar()">&times;</span>
+        </div>
+        <div id="calendar"></div>
+    </div>
+</div>
+<script th:inline="javascript">
+    var calendarEvents = [
+        /*[# th:each="task : ${tasks}"]*/
+        {
+            title: /*[[${task.title}]]*/,
+            start: /*[[${task.dueDate}]]*/,
+            color:
+                /*[[${task.priority.name()}]]*/ === 'HIGH' ? '#e74c3c' :
+                /*[[${task.priority.name()}]]*/ === 'MEDIUM' ? '#f39c12' :
+                '#2ecc71'
+        },
+        /*[/]*/
+    ];
+</script>
+<script th:inline="javascript">
 
-<a href="/api/tasks/add">Add New Task</a>
+    let calendar;
+
+    function openCalendar() {
+        document.getElementById("calendarModal").style.display = "block";
+
+        if (!calendar) {
+            let tasks = [[${tasks}]];
+
+            let events = tasks.map(task => ({
+                title: task.title,
+                start: task.dueDate,
+                url: '/api/tasks/view/' + task.id,
+                color:
+                    task.status === 'DONE' ? '#2ecc71' :
+                    task.status === 'IN_PROGRESS' ? '#f39c12' :
+                    '#e74c3c'
+            }));
+
+            let calendarEl = document.getElementById('calendar');
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 'auto',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: events
+            });
+
+            calendar.render();
+        }
+    }
+
+    function closeCalendar() {
+        document.getElementById("calendarModal").style.display = "none";
+    }
+
+</script>
+
 
 </body>
 </html>

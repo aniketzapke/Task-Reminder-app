@@ -2,45 +2,67 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Edit Task</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 
-<h2>Edit Task</h2>
-<div  th:if="${errorMessage}" style="color:red; margin-bottom:10px;">
-    <p th:text="${errorMessage}"></p>
+<div class="page-wrapper">
+
+    <div class="page-header">
+        <h2>Edit Task</h2>
+        <a th:href="@{/api/tasks/task}" class="btn btn-secondary">Back</a>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-error">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/api/tasks/edit/{id}(id=${task.id})}"
+              th:object="${task}" method="post">
+
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" th:field="*{title}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea th:field="*{description}" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Due Date</label>
+                <input type="date" th:field="*{dueDate}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select th:field="*{status}">
+                    <option th:each="s : ${T(com.tracker.app.enums.TaskStatus).values()}"
+                            th:value="${s}" th:text="${s}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Priority</label>
+                <select th:field="*{priority}">
+                    <option th:each="p : ${T(com.tracker.app.enums.TaskPriority).values()}"
+                            th:value="${p}" th:text="${p}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a th:href="@{/api/tasks/task}" class="btn btn-secondary">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+
 </div>
-
-<form th:action="@{/api/tasks/edit/{id}(id=${task.id})}" th:object="${task}" method="post">
-
-    <label>Title:</label>
-    <input type="text" th:field="*{title}" required/><br/><br/>
-
-    <label>Description:</label>
-    <textarea th:field="*{description}"></textarea><br/><br/>
-
-    <label>Due Date:</label>
-    <input type="date" th:field="*{dueDate}" required/><br/><br/>
-
-    <label>Status:</label>
-    <select th:field="*{status}">
-        <option th:each="s : ${T(com.tracker.app.enums.TaskStatus).values()}"
-                th:value="${s}"
-                th:text="${s}">
-        </option>
-    </select><br/><br/>
-
-    <label>Priority:</label>
-    <select th:field="*{priority}">
-        <option th:each="p : ${T(com.tracker.app.enums.TaskPriority).values()}"
-                th:value="${p}"
-                th:text="${p}">
-        </option>
-    </select>
-    <br/><br/>
-
-    <button type="submit">Update Task</button>
-    <a th:href="@{/api/tasks/task}">Cancel</a>
-</form>
 
 </body>
 </html>

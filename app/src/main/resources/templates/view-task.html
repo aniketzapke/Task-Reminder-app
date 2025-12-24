@@ -4,6 +4,7 @@
     <meta charset="UTF-8"/>
     <title>Task Details</title>
 
+    <!-- YOUR CSS (USED AS-IS) -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,21 +21,34 @@
         .brand {
             font-size: 20px;
             font-weight: bold;
+            color: #d32f2f;
         }
 
         .nav a {
             margin-right: 10px;
             text-decoration: none;
-            padding: 6px 10px;
+            padding: 6px 12px;
             border: 1px solid #ccc;
             border-radius: 4px;
             background: #f0f0f0;
+            color: #000;
         }
 
         .container {
+            max-width: 700px;
             border: 1px solid #ddd;
             padding: 20px;
             border-radius: 6px;
+            background: #fff;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 12px;
+        }
+
+        .detail-row strong {
+            width: 150px;
         }
 
         .status-done {
@@ -44,6 +58,11 @@
 
         .status-pending {
             color: red;
+            font-weight: bold;
+        }
+
+        .status-in_progress {
+            color: orange;
             font-weight: bold;
         }
 
@@ -62,79 +81,91 @@
             font-weight: bold;
         }
 
+        .actions {
+            margin-top: 20px;
+        }
+
         footer {
             margin-top: 30px;
             font-size: 14px;
             color: #777;
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
-<<<<<<< HEAD
-=======
 
-
->>>>>>> 8e1bed8853aaa166553a162d19f3505f70320e0f
+<!-- HEADER -->
 <div class="header">
-    <div class="brand">Task Reminder App</div>
+    <div class="brand">Task Details</div>
     <div class="nav">
-        <a th:href="@{/api/tasks/task}">Back to List</a>
+        <a th:href="@{/api/tasks/task}">Back</a>
         <a th:href="@{/api/tasks/edit/{id}(id=${task.id})}">Edit</a>
     </div>
 </div>
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 8e1bed8853aaa166553a162d19f3505f70320e0f
+<!-- DETAILS CARD -->
 <div class="container">
-    <h2>Task Details</h2>
 
-    <p>
-        <strong>Title:</strong>
+    <div class="detail-row">
+        <strong>Title</strong>
         <span th:text="${task.title}"></span>
-    </p>
+    </div>
 
-    <p>
-        <strong>Description:</strong>
+    <div class="detail-row">
+        <strong>Description</strong>
         <span th:text="${task.description}"></span>
-    </p>
+    </div>
 
-    <p>
-        <strong>Due Date:</strong>
+    <div class="detail-row">
+        <strong>Due Date</strong>
         <span th:text="${task.dueDate}"></span>
-    </p>
+    </div>
 
-    <p>
-        <strong>Status:</strong>
+    <div class="detail-row">
+        <strong>Status</strong>
         <span th:text="${task.status}"
-              th:class="${task.status.name() == 'DONE'} ? 'status-done' : 'status-pending'">
+              th:class="'status-' + ${#strings.toLowerCase(task.status.name())}">
         </span>
-    </p>
+    </div>
 
-    <p>
-        <strong>Priority:</strong>
+    <div class="detail-row">
+        <strong>Priority</strong>
         <span th:text="${task.priority}"
               th:class="
                 ${task.priority.name() == 'HIGH'} ? 'badge-high' :
                 (${task.priority.name() == 'MEDIUM'} ? 'badge-medium' : 'badge-low')
               ">
         </span>
-    </p>
+    </div>
 
-    <p>
-        <strong>Created At:</strong>
-        <span th:text="${task.createdAt}"></span>
-    </p>
+    <div class="detail-row">
+        <strong>Created At</strong>
+        <span th:text="${#temporals.format(task.createdAt, 'dd-MM-yyyy')}"></span>
+    </div>
+
+    <div class="detail-row">
+        <strong>Completed At</strong>
+        <span th:text="${task.completedAt != null
+                ? #temporals.format(task.completedAt, 'dd-MM-yyyy')
+                : '-'}">
+        </span>
+    </div>
+
+    <!-- ACTION -->
+    <div class="actions">
+        <a th:if="${task.status.name() == 'IN_PROGRESS'}"
+           th:href="@{/api/tasks/done/{id}(id=${task.id})}"
+           class="nav a">
+            Mark Done
+        </a>
+    </div>
+
 </div>
-<<<<<<< HEAD
-=======
 
-
->>>>>>> 8e1bed8853aaa166553a162d19f3505f70320e0f
 <footer>
-    Task Reminder App © 2025 – Created by Student
+    Task Reminder App © 2025 — Created by Student
 </footer>
 
 </body>
