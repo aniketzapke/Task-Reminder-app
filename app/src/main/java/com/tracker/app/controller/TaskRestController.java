@@ -95,5 +95,22 @@ public class TaskRestController {
     public ResponseEntity<List<Task>> getByDueDate(@RequestParam("date") String date) {
         return ResponseEntity.ok(taskService.findByDueDate(date));
     }
+    @GetMapping("/due-today")
+    public ResponseEntity<List<Task>> getTasksDueToday() {
+        return ResponseEntity.ok(taskService.getTasksDueToday());
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<Task>> getUpcomingTasks(
+            @RequestParam(defaultValue = "3") int days
+    ) {
+        return ResponseEntity.ok(taskService.getUpcomingTasks(days));
+    }
+
+    @GetMapping("/overdue")
+    public ResponseEntity<List<Task>> getOverdueTasks() {
+        return ResponseEntity.ok(taskService.getOverdueTasks());
+    }
+
 }
 

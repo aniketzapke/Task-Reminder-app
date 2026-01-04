@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
+import java.util.stream.Collectors;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -84,4 +87,43 @@ public class Taskservice {
 
         return taskRepository.findAll(pageable);
     }
+    public List<Task> getTasksDueToday() {
+        LocalDate today = LocalDate.now();
+
+        return taskRepository.findAll()
+                .stream()
+                .filter(task -> today.toString().equals(task.getDueDate()))
+                .collect(Collectors.toList());
+    }
+    public List<Task> getUpcomingTasks(int days) {
+
+        LocalDate today = LocalDate.now();
+        LocalDate futureDate = today.plusDays(days);
+
+        return taskRepository.findAll()
+                .stream()
+                .filter(task ->
+                        task.getDueDate() != null &&
+                                LocalDate.parse(task.getDueDate())
+                                        .isAfter(today.minusDays(1)) &&
+                                LocalDate.parse(task.getDueDate())
+                                        .isBefore(futureDate.plusDays(1))
+                )
+                .collect(Collectors.toList());
+    }
+    public List<Task> getOverdueTasks() {
+
+        LocalDate today = LocalDate.now();
+
+        return taskRepository.findAll()
+                .stream()
+                .filter(task ->
+                        task.getDueDate() != null &&
+                                LocalDate.parse(task.getDueDate())
+                                        .isBefore(today)
+                )
+                .collect(Collectors.toList());
+    }
+
+
 }
